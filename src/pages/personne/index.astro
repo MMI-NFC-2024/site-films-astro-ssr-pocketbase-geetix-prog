@@ -1,0 +1,15 @@
+---
+import Layout from "../../layouts/Layout.astro";
+const personnes = await Astro.locals.pb.collection("Personnes").getFullList()
+---
+
+<Layout>
+    <h1>Personnes</h1>
+    <ul class="flex flex-col">
+        {personnes.map((personne) => (
+            <li>
+                <a href={`/personne/${personne.id}`}>{personne.nom}</a>
+            </li>
+        ))}
+    </ul>
+</Layout>
