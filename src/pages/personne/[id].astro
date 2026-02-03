@@ -1,0 +1,11 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import { Debug } from "astro:components";
+export const prerender = false
+const { id } = Astro.params;
+const personne = await Astro.locals.pb.collection("Personnes").getOne(id);
+---
+
+<Layout>
+    <Debug {personne}/>
+</Layout>
