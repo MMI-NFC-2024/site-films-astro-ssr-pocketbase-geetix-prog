@@ -1,6 +1,9 @@
 ---
 import LinkPersonne from "../../components/LinkPersonne.astro";
 import Layout from "../../layouts/Layout.astro";
+
+export const prerender = false;
+
 const personnes = await Astro.locals.pb.collection("Personnes").getFullList()
 ---
 
@@ -13,4 +16,22 @@ const personnes = await Astro.locals.pb.collection("Personnes").getFullList()
             </li>
         ))}
     </ul>
+    
+    <!-- Debug : afficher l'état de l'authentification -->
+    <div style="border: 1px solid red; padding: 10px; margin: 10px;">
+        <h3>Debug Auth:</h3>
+        <p>isValid: {Astro.locals.pb.authStore.isValid ? "OUI" : "NON"}</p>
+        <p>Model: {JSON.stringify(Astro.locals.pb.authStore.model)}</p>
+        <p>Token: {Astro.locals.pb.authStore.token ? "Présent" : "Absent"}</p>
+    </div>
+    
+    {Astro.locals.pb.authStore.isValid && (
+        <div class="mt-4">
+            <a href="/personne/edit/" class="inline-block">
+                <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Créer une fiche acteur
+                </button>
+            </a>
+        </div>
+    )}
 </Layout>
