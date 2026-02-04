@@ -5,6 +5,7 @@ import { formatDate } from "../../utilitaires";
 
 const { id } = Astro.params;
 
+
 if (!id) {
     return Astro.redirect("/film");
 }
@@ -12,6 +13,8 @@ if (!id) {
 const film = await Astro.locals.pb.collection("Films").getOne(id, {
     expand: "personnes"
 });
+
+const image = Astro.locals.pb.files.getURL(film, film.image)
 
 const acteurs = film.expand?.personnes ?? [];
 ---
@@ -57,5 +60,8 @@ const acteurs = film.expand?.personnes ?? [];
                 <a href={`/film/edit/${film.id}`} class="btn">Modifier</a>
             )}
         </div>
+
+        <img src={image} alt={film.titre}>
+
     </article>
 </Layout>
