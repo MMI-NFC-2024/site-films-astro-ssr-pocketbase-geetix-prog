@@ -49,6 +49,7 @@ export type FilmsRecord = {
 	created: IsoAutoDateString
 	duree?: number
 	id: string
+	personnes?: RecordIdString[]
 	sortie?: IsoDateString
 	synopsis?: string
 	titre?: string

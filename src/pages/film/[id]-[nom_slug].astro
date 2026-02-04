@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import LinkPersonne from "../../components/LinkPersonne.astro";
 import { formatDate } from "../../utilitaires";
 
 const { id } = Astro.params;
@@ -8,7 +9,11 @@ if (!id) {
     return Astro.redirect("/film");
 }
 
-const film = await Astro.locals.pb.collection("Films").getOne(id);
+const film = await Astro.locals.pb.collection("Films").getOne(id, {
+    expand: "personnes"
+});
+
+const acteurs = film.expand?.personnes ?? [];
 ---
 <Layout title={film.titre ?? 'Film'}>
     <article>
@@ -29,6 +34,19 @@ const film = await Astro.locals.pb.collection("Films").getOne(id);
                 <div>
                     <h2>Synopsis</h2>
                     <p class="text-gray-700 leading-relaxed">{film.synopsis}</p>
+                </div>
+            )}
+
+            {acteurs.length > 0 && (
+                <div>
+                    <h2>Casting</h2>
+                    <ul class="list-disc list-inside">
+                        {acteurs.map((personne) => (
+                            <li>
+                                <LinkPersonne personne={personne} />
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             )}
         </div>

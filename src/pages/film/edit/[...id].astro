@@ -9,6 +9,12 @@ let film = {} as FilmsResponse ;
 if (id) {
     film = await Astro.locals.pb.collection("Films").getOne(id)
 }
+
+// Récupérer toutes les personnes pour le select
+const personnes = await Astro.locals.pb.collection("Personnes").getFullList({
+    sort: "nom"
+});
+
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     const filmCree = await (id
@@ -54,6 +60,21 @@ if (Astro.request.method === "POST") {
         <label class="block">
                 <span class="text-gray-700">Synopsis :</span>
                 <textarea name="synopsis" class="mt-1 block w-full" rows="4">{film.synopsis}</textarea>
+        </label>
+
+        <label class="block">
+                <span class="text-gray-700">Acteurs :</span>
+                <select name="personnes" multiple class="mt-1 block w-full" size="5">
+                    {personnes.map((personne) => (
+                        <option 
+                            value={personne.id} 
+                            selected={film.personnes?.includes(personne.id)}
+                        >
+                            {personne.prenom} {personne.nom}
+                        </option>
+                    ))}
+                </select>
+                <span class="text-sm text-gray-500">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs acteurs</span>
         </label>
 
         <button>
