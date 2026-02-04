@@ -1,0 +1,19 @@
+---
+import LinkPersonne from "../../components/LinkPersonne.astro"
+import Layout from "../../layouts/Layout.astro"
+const films = await Astro.locals.pb.collection("Films").getFullList()
+---
+
+<Layout titre="Les films">
+    <h1>les personnes</h1>
+    <ul>
+        {
+            films.map((film) => (
+                <li>
+                    <LinkPersonne personne={film} />
+                </li>
+            ))
+        }
+    </ul>
+{ Astro.locals.pb.authStore.isValid && <a href="/film/edit/">Ajouter un nouveau film</a> }
+</Layout>

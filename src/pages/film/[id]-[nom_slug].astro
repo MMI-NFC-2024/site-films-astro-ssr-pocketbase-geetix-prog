@@ -5,7 +5,7 @@ import Layout from "../../layouts/Layout.astro";
 export const prerender = false;
 
 const { id } = Astro.params ;
-const personne = await Astro.locals.pb.collection("Personnes").getOne(id) ;
+const personne = await Astro.locals.pb.collection("personnes").getOne(id) ;
 
 
 ---
