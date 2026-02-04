@@ -1,36 +1,34 @@
 ---
 import slug from "slug";
 import Layout from "../../../layouts/Layout.astro"
-import { PersonnesProfessionOptions, type PersonnesResponse } from "../../../pocketbase-types";
+import type { FilmsResponse } from "../../../pocketbase-types";
 import { formatDate } from "../../../utilitaires";
-import { Debug } from "astro:components";
 const { id } = Astro.params ;
-export const prerender = false;
 let message = null
-let personne = {} as PersonnesResponse ;
+let film = {} as FilmsResponse ;
 if (id) {
-    personne = await Astro.locals.pb.collection("Personnes").getOne(id)
+    film = await Astro.locals.pb.collection("Films").getOne(id)
 }
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
-    const personneCree = await (id
-            ?(Astro.locals.pb.collection("Personnes").update(id!, data))
-            :(Astro.locals.pb.collection("Personnes").create(data))
+    const filmCree = await (id
+            ?(Astro.locals.pb.collection("Films").update(id!, data))
+            :(Astro.locals.pb.collection("Films").create(data))
         )
         .catch(err => {
-            console.error("Erreur de sauvegarde de la personne : ", err);
+            console.error("Erreur de sauvegarde du film : ", err);
             message = err.message ;
             return null
         })
     ;
-    if (personneCree) {
-        return Astro.redirect(`/personne/${personneCree.id}-${slug(personneCree.nom ?? "Inconnu")}`)
+    if (filmCree) {
+        return Astro.redirect(`/film/${filmCree.id}-${slug(filmCree.titre ?? "Inconnu")}`)
     }
 }
 ---
 
 <Layout>
-    <h1>Ajouter une personne</h1>
+    <h1>{ id ? "Modifier un film" : "Ajouter un film" }</h1>
     {message && <p class="text-red-500">{message}</p>}
     <form method="post">
 
@@ -39,43 +37,24 @@ if (Astro.request.method === "POST") {
         <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
 
         <label class="block">
-                <span class="text-gray-700">Nom :</span>
-                <input name="nom" value={personne.nom} type="text" class="mt-1 block w-full" placeholder="">
+                <span class="text-gray-700">Titre :</span>
+                <input name="titre" value={film.titre} type="text" class="mt-1 block w-full" placeholder="">
         </label>
 
         <label class="block">
-                <span class="text-gray-700">Prénom :</span>
-                <input name="prenom" value={personne.prenom} type="text" class="mt-1 block w-full" placeholder="">
+                <span class="text-gray-700">Date de sortie :</span>
+                <input name="sortie" value={formatDate(film.sortie)} type="date" class="mt-1 block w-full" placeholder="">
         </label>
 
         <label class="block">
-                <span class="text-gray-700">Date de naissance :</span>
-                <input name="date_de_naissance" value={formatDate(personne.naissance)} type="date" class="mt-1 block w-full" placeholder="">
+                <span class="text-gray-700">Durée (en minutes) :</span>
+                <input name="duree" value={film.duree} type="number" class="mt-1 block w-full" placeholder="">
         </label>
 
         <label class="block">
-                <span class="text-gray-700">Date de décès :</span>
-                <input name="date_de_deces" value={formatDate(personne.mort)} type="date" class="mt-1 block w-full" placeholder="">
+                <span class="text-gray-700">Synopsis :</span>
+                <textarea name="synopsis" class="mt-1 block w-full" rows="4">{film.synopsis}</textarea>
         </label>
-
-       <fieldset>
-        <legend>Profession : </legend>
-           {
-                Object.entries(PersonnesProfessionOptions).map(([key, value]) =>
-                    <label>
-                        <input type="checkbox" name="profession" value={value}
-                        checked={personne.profession?.includes(value)}
-                        />
-                        {key}
-                    </label>
-                )
-            }
-       </fieldset>
-
-        {/* <label class="block">
-                <span class="text-gray-700">Image de la personne :</span>
-                <input name="profession" type="" class="mt-1 block w-full" placeholder="">
-        </label> */}
 
         <button>
             { id ? "Mettre à jour" : "Ajouter" }

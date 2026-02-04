@@ -1,16 +1,16 @@
 ---
-import LinkPersonne from "../../components/LinkPersonne.astro"
+import LinkFilm from "../../components/LinkFilm.astro"
 import Layout from "../../layouts/Layout.astro"
 const films = await Astro.locals.pb.collection("Films").getFullList()
 ---
 
 <Layout titre="Les films">
-    <h1>les personnes</h1>
+    <h1>les films</h1>
     <ul>
         {
             films.map((film) => (
                 <li>
-                    <LinkPersonne personne={film} />
+                    <LinkFilm film={film} />
                 </li>
             ))
         }

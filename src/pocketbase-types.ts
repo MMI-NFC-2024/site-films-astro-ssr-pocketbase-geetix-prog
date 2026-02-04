@@ -6,6 +6,7 @@ import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
 export enum Collections {
+	Films = "Films",
 	Personnes = "Personnes",
 	Authorigins = "_authOrigins",
 	Externalauths = "_externalAuths",
@@ -44,17 +45,35 @@ export type AuthSystemFields<T = unknown> = {
 
 // Record types for each collection
 
+export type FilmsRecord = {
+	created: IsoAutoDateString
+	duree?: number
+	id: string
+	sortie?: IsoDateString
+	synopsis?: string
+	titre?: string
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
 export enum PersonnesProfessionOptions {
 	"acteur" = "acteur",
 	"réalisateur" = "réalisateur",
 	"scénariste" = "scénariste",
 	"producteur" = "producteur",
 }
+
+export enum PersonnesNationaliteOptions {
+	"fr" = "fr",
+	"us" = "us",
+	"uk" = "uk",
+}
 export type PersonnesRecord = {
 	created: IsoAutoDateString
 	id: string
 	mort?: IsoDateString
 	naissance?: IsoDateString
+	nationalite?: PersonnesNationaliteOptions
 	nom?: string
 	prenom?: string
 	profession?: PersonnesProfessionOptions[]
@@ -125,6 +144,7 @@ export type UsersRecord = {
 }
 
 // Response types include system fields and match responses from the PocketBase API
+export type FilmsResponse<Texpand = unknown> = Required<FilmsRecord> & BaseSystemFields<Texpand>
 export type PersonnesResponse<Texpand = unknown> = Required<PersonnesRecord> & BaseSystemFields<Texpand>
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
@@ -136,6 +156,7 @@ export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSyste
 // Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
+	Films: FilmsRecord
 	Personnes: PersonnesRecord
 	_authOrigins: AuthoriginsRecord
 	_externalAuths: ExternalauthsRecord
@@ -146,6 +167,7 @@ export type CollectionRecords = {
 }
 
 export type CollectionResponses = {
+	Films: FilmsResponse
 	Personnes: PersonnesResponse
 	_authOrigins: AuthoriginsResponse
 	_externalAuths: ExternalauthsResponse

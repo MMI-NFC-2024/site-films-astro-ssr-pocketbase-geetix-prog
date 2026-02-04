@@ -1,10 +1,10 @@
 ---
 import slug from 'slug';
-import type { PersonnesRecord } from '../pocketbase-types'
+import type { FilmsRecord } from '../pocketbase-types'
 
 interface Props {
-    personne:PersonnesRecord;
+    film:FilmsRecord;
 }
-const personne = Astro.props.personne
+const film = Astro.props.film
 ---
-<a href={`/personne/${personne.id}-${slug(personne.nom ?? "Inconnu")}`}>{personne.nom}</a>
+<a href={`/film/${film.id}-${slug(film.titre ?? "Inconnu")}`}>{film.titre}</a>

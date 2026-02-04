@@ -1,18 +1,43 @@
 ---
-import { Debug } from "astro:components";
 import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utilitaires";
 
-export const prerender = false;
+const { id } = Astro.params;
 
-const { id } = Astro.params ;
-const personne = await Astro.locals.pb.collection("personnes").getOne(id) ;
+if (!id) {
+    return Astro.redirect("/film");
+}
 
-
+const film = await Astro.locals.pb.collection("Films").getOne(id);
 ---
-<Layout>
-    <p>Affichage d'une personne</p>
-    <Debug {personne} />
-    { Astro.locals.pb.authStore.record?.id === personne.user && 
-        <a href={`/personne/edit/${personne.id}`}>Modifier la personne</a>
-    }
+<Layout title={film.titre ?? 'Film'}>
+    <article>
+        <header class="mb-6">
+            <h1>{film.titre}</h1>
+            {film.sortie && (
+                <p class="text-gray-600">Sorti le {formatDate(film.sortie)}</p>
+            )}
+        </header>
+
+        <div class="space-y-4">
+            {film.duree && (
+                <p>
+                    <span class="font-medium">Durée :</span> {film.duree} minutes
+                </p>
+            )}
+            {film.synopsis && (
+                <div>
+                    <h2>Synopsis</h2>
+                    <p class="text-gray-700 leading-relaxed">{film.synopsis}</p>
+                </div>
+            )}
+        </div>
+
+        <div class="mt-8 flex gap-4">
+            <a href="/film" class="text-gray-600">← Retour à la liste</a>
+            {Astro.locals.pb.authStore.record?.id === film.user && (
+                <a href={`/film/edit/${film.id}`} class="btn">Modifier</a>
+            )}
+        </div>
+    </article>
 </Layout>

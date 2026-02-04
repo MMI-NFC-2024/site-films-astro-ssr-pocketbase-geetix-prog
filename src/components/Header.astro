@@ -1,3 +1,14 @@
-<header>
-    <a href="/authPassword">{Astro.locals.pb.authStore.isValid ? "Se déconnecter" : "Se connecter"}</a>
+<header class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <a href="/" class="text-xl font-bold text-gray-900 no-underline hover:no-underline">🎬 Films</a>
+            <div class="flex gap-4">
+                <a href="/film" class="text-gray-600 hover:text-gray-900">Films</a>
+                <a href="/personne" class="text-gray-600 hover:text-gray-900">Personnes</a>
+            </div>
+        </div>
+        <a href="/authPassword" class="text-sm px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+            {Astro.locals.pb.authStore.isValid ? "Se déconnecter" : "Se connecter"}
+        </a>
+    </nav>
 </header>

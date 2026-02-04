@@ -5,7 +5,6 @@ import { PersonnesProfessionOptions, type PersonnesResponse } from "../../../poc
 import { formatDate } from "../../../utilitaires";
 import { Debug } from "astro:components";
 const { id } = Astro.params ;
-export const prerender = false;
 let message = null
 let personne = {} as PersonnesResponse ;
 if (id) {

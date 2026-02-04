@@ -1,18 +1,47 @@
 ---
-import { Debug } from "astro:components";
 import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utilitaires";
 
-export const prerender = false;
+const { id } = Astro.params;
 
-const { id } = Astro.params ;
-const personne = await Astro.locals.pb.collection("Personnes").getOne(id) ;
+if (!id) {
+    return Astro.redirect("/personne");
+}
 
-
+const personne = await Astro.locals.pb.collection("Personnes").getOne(id);
 ---
-<Layout>
-    <p>Affichage d'une personne</p>
-    <Debug {personne} />
-    { Astro.locals.pb.authStore.record?.id === personne.user && 
-        <a href={`/personne/edit/${personne.id}`}>Modifier la personne</a>
-    }
+<Layout title={`${personne.prenom ?? ''} ${personne.nom ?? 'Personne'}`}>
+    <article>
+        <header class="mb-6">
+            <h1>{personne.prenom} {personne.nom}</h1>
+            {personne.profession && personne.profession.length > 0 && (
+                <p class="text-gray-600">{personne.profession.join(", ")}</p>
+            )}
+        </header>
+
+        <div class="space-y-4">
+            {personne.naissance && (
+                <p>
+                    <span class="font-medium">Date de naissance :</span> {formatDate(personne.naissance)}
+                </p>
+            )}
+            {personne.mort && (
+                <p>
+                    <span class="font-medium">Date de décès :</span> {formatDate(personne.mort)}
+                </p>
+            )}
+            {personne.nationalite && (
+                <p>
+                    <span class="font-medium">Nationalité :</span> {personne.nationalite.toUpperCase()}
+                </p>
+            )}
+        </div>
+
+        <div class="mt-8 flex gap-4">
+            <a href="/personne" class="text-gray-600">← Retour à la liste</a>
+            {Astro.locals.pb.authStore.record?.id === personne.user && (
+                <a href={`/personne/edit/${personne.id}`} class="btn">Modifier</a>
+            )}
+        </div>
+    </article>
 </Layout>
