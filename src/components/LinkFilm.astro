@@ -9,7 +9,7 @@ interface Props {
 const film = Astro.props.film;
 ---
 
-<a href={`/films/${film.id}-${slug(film.titre ?? "Inconnu")}`} class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition-shadow hover:shadow-md">
+<a href={`/film/${film.id}-${slug(film.titre ?? "Inconnu")}`} class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition-shadow hover:shadow-md">
     <div class="p-6">
         <h2 class="text-lg font-semibold line-clamp-2">{film.titre}</h2>
         {film.synopsis && (

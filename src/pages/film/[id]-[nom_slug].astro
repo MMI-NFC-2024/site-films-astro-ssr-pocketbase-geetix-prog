@@ -27,7 +27,7 @@ const film = await Astro.locals.pb.collection("films").getOne<
 <Layout>
     <div class="max-w-4xl mx-auto px-4 py-16">
         <div class="mb-8">
-            <a href="/films" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
+            <a href="/film" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
         </div>
         
         <div class="space-y-8">
@@ -53,11 +53,11 @@ const film = await Astro.locals.pb.collection("films").getOne<
             
             <div class="flex gap-4">
                 {Astro.locals.pb.authStore.record?.id === film.user && (
-                    <a href={`/films/edit/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Modifier le film</a>
-                    <a href={`/films/supp-film/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Supprimer le film</a>
-                    <a href={`/films/ajout-role/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Ajouter un rôle</a>
+                    <a href={`/film/edit/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Modifier le film</a>
+                    <a href={`/film/supp-film/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Supprimer le film</a>
+                    <a href={`/film/ajout-role/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Ajouter un rôle</a>
                 )}
-                <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">Voir d'autres films</a>
+                <a href="/film" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">Voir d'autres films</a>
             </div>
         </div>
 

@@ -8,7 +8,7 @@ const personnes = await Astro.locals.pb.collection("personnes").getFullList() ;
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     Astro.locals.pb.collection("role").create(data)
-    return Astro.redirect(`/films/${idFilm}-${slug(film.titre ?? "Inconnu")}`)
+    return Astro.redirect(`/film/${idFilm}-${slug(film.titre ?? "Inconnu")}`)
 }
 ---
 
@@ -38,7 +38,7 @@ if (Astro.request.method === "POST") {
         </div>
     
         <div class="mt-8 flex justify-between">
-                <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
+                <a href="/film" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
                 <button type="submit" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
                     Ajouter
                 </button>

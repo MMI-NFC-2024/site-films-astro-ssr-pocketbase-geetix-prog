@@ -23,7 +23,7 @@ if (Astro.request.method === "POST") {
         })
     ;
     if (filmCree) {
-        return Astro.redirect(`/films/${filmCree.id}-${slug(filmCree.titre ?? "Inconnu")}`)
+        return Astro.redirect(`/film/${filmCree.id}-${slug(filmCree.titre ?? "Inconnu")}`)
     }
 }
 
@@ -33,7 +33,7 @@ const personneListes = await Astro.locals.pb.collection("personnes").getFullList
 <Layout>
     <div class="max-w-2xl mx-auto px-4 py-16">
         <div class="mb-8">
-            <a href="/films" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
+            <a href="/film" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
         </div>
         
         <div class="rounded-xl border border-gray-200 bg-gray-100">
@@ -159,7 +159,7 @@ const personneListes = await Astro.locals.pb.collection("personnes").getFullList
                     </div>
 
                     <div class="mt-8 flex justify-between">
-                        <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
+                        <a href="/film" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
                         <button type="submit" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
                             {id ? "Mettre à jour" : "Ajouter"}
                         </button>

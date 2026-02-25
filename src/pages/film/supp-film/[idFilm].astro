@@ -7,7 +7,7 @@ const film = await Astro.locals.pb.collection("films").getOne(idFilm!)
 
 if (Astro.request.method === "POST") {
    await Astro.locals.pb.collection("films").delete(idFilm!)
-   return Astro.redirect("/films")
+   return Astro.redirect("/film")
 }
 ---
 
