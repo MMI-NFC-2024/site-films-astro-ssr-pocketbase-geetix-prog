@@ -1,28 +1,20 @@
 ---
-import slug from "slug";
 import Layout from "../../../layouts/Layout.astro"
 import type { FilmsResponse } from "../../../pocketbase-types";
 import { formatDate } from "../../../utilitaires";
-const { id } = Astro.params ;
-let message = null
-let film = {} as FilmsResponse ;
+import slug from "slug";
+
+const { id } = Astro.params;
+let message = null;
+let film = {} as FilmsResponse;
 if (id) {
-    film = await Astro.locals.pb.collection("Films").getOne(id)
+    film = await Astro.locals.pb.collection("films").getOne(id);
 }
-
-const imageUrl = film.image ? Astro.locals.pb.files.getURL(film, film.image) : null;
-
-const personnes = await Astro.locals.pb.collection("Personnes").getFullList({
-    sort: "nom"
-});
-
-const personnesList = await Astro.locals.pb.collection("Personnes").getFullList();
-
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     const filmCree = await (id
-            ?(Astro.locals.pb.collection("Films").update(id!, data))
-            :(Astro.locals.pb.collection("Films").create(data))
+            ?(Astro.locals.pb.collection("films").update(id!, data))
+            :(Astro.locals.pb.collection("films").create(data))
         )
         .catch(err => {
             console.error("Erreur de sauvegarde du film : ", err);
@@ -31,93 +23,149 @@ if (Astro.request.method === "POST") {
         })
     ;
     if (filmCree) {
-        return Astro.redirect(`/film/${filmCree.id}-${slug(filmCree.titre ?? "Inconnu")}`)
+        return Astro.redirect(`/films/${filmCree.id}-${slug(filmCree.titre ?? "Inconnu")}`)
     }
 }
+
+const personneListes = await Astro.locals.pb.collection("personnes").getFullList() ;
 ---
 
 <Layout>
-    <h1>{ id ? "Modifier un film" : "Ajouter un film" }</h1>
-    {message && <p class="text-red-500">{message}</p>}
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
-
-        { id && <input type="hidden" name="id" value={id}> }
-
-        <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
-
-        <div class="flex items-center gap-4">
-            <label for="titre" class="text-gray-700 w-40">Titre :</label>
-            <input id="titre" name="titre" value={film.titre} type="text" class="flex-1">
+    <div class="max-w-2xl mx-auto px-4 py-16">
+        <div class="mb-8">
+            <a href="/films" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
         </div>
-
-        <div class="flex items-center gap-4">
-            <label for="sortie" class="text-gray-700 w-40">Date de sortie :</label>
-            <input id="sortie" name="sortie" value={formatDate(film.sortie)} type="date" class="flex-1">
-        </div>
-
-        <div class="flex items-center gap-4">
-            <label for="duree" class="text-gray-700 w-40">Durée (min) :</label>
-            <input id="duree" name="duree" value={film.duree} type="number" class="flex-1">
-        </div>
-
-        <div class="flex items-start gap-4">
-            <label for="synopsis" class="text-gray-700 w-40 pt-2">Synopsis :</label>
-            <textarea id="synopsis" name="synopsis" class="flex-1" rows="4">{film.synopsis}</textarea>
-        </div>
-
-        <div class="flex items-start gap-4">
-            <label for="image" class="text-gray-700 w-40 pt-2">Image :</label>
-            <div class="flex-1">
-                <input id="image" name="image" type="file" accept="image/*">
-                {imageUrl && (
-                    <div class="mt-2">
-                        <span class="text-sm text-gray-500">Image actuelle :</span>
-                        <img src={imageUrl} alt={film.titre} class="mt-1 max-w-xs rounded-lg">
+        
+        <div class="rounded-xl border border-gray-200 bg-gray-100">
+            <div class="p-6">
+                <h1 class="text-3xl font-semibold">{id ? "Modifier le film" : "Ajouter un nouveau film"}</h1>
+                
+                {message && (
+                    <div class="rounded-md border border-red-200 bg-red-50 p-3 text-red-700">
+                        <span>{message}</span>
                     </div>
                 )}
+                
+                <form method="post" enctype="multipart/form-data" class="space-y-6 mt-6">
+                    {id && <input type="hidden" name="id" value={id} />}
+                    <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
+
+                    <label >Image du film
+                        <input type="file" name="image" >
+                    </label>
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Titre *</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="titre" 
+                            value={film.titre} 
+                            class="w-full rounded-md border border-gray-300 px-3 py-2" 
+                            placeholder="Titre du film"
+                            required
+                        />
+                    </div>
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Durée (minutes)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            name="duree_min" 
+                            value={film.duree_min} 
+                            class="w-full rounded-md border border-gray-300 px-3 py-2" 
+                            placeholder="120"
+                        />
+                    </div>
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Synopsis</span>
+                        </label>
+                        <textarea 
+                            name="synopsis" 
+                            class="h-32 w-full rounded-md border border-gray-300 px-3 py-2" 
+                            placeholder="Description du film..."
+                        >{film.synopsis}</textarea>
+                    </div>
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Date de sortie</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            name="date_sortie" 
+                            value={formatDate(film.date_sortie)} 
+                            class="w-full rounded-md border border-gray-300 px-3 py-2"
+                        />
+                    </div>
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Réalisateur</span>
+                        </label>
+                        <select name="realisateurs" id="realisateurs" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                            <option value="">-- Sélectionner un réalisateur --</option>
+                            {
+                                personneListes.map((personne) => (
+                                <option selected={film.realisateurs === personne.id} value={personne.id}>
+                                    {personne.prenom} {personne.nom}
+                                </option>
+                                ))
+                            }
+                        </select>
+                    </div>
+
+                    <!-- <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Acteurs</span>
+                        </label>
+                        <select name="acteurs" multiple class="h-32 w-full rounded-md border border-gray-300 px-3 py-2">
+                            {
+                                personneListes.map((personne) => (
+                                    <option selected={film.acteurs?.includes(personne.id)} 
+                                    value={personne.id}
+                                    >
+                                        {personne.prenom} {personne.nom}
+                                    </option>
+                                ))}
+                        </select>
+                        <label class="block">
+                            <span class="text-xs text-gray-500">Maintenez Ctrl pour sélectionner plusieurs acteurs</span>
+                        </label>
+                    </div> -->
+
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Producteurs</span>
+                        </label>
+                        <select name="producteurs" multiple class="h-32 w-full rounded-md border border-gray-300 px-3 py-2">
+                            {
+                                personneListes.map((personne) => (
+                                    <option selected={film.producteurs?.includes(personne.id)} 
+                                    value={personne.id}
+                                    >
+                                        {personne.prenom} {personne.nom}
+                                    </option>
+                                ))}
+                        </select>
+                        <label class="block">
+                            <span class="text-xs text-gray-500">Maintenez Ctrl pour sélectionner plusieurs producteurs</span>
+                        </label>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
+                            {id ? "Mettre à jour" : "Ajouter"}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div class="flex items-start gap-4">
-            <label for="personnes" class="text-gray-700 w-40 pt-2">Acteurs :</label>
-            <div class="flex-1">
-                <select id="personnes" name="personnes" multiple size="5" class="w-full">
-                    {personnes.map((personne) => (
-                        <option 
-                            value={personne.id} 
-                            selected={film.personnes?.includes(personne.id)}
-                        >
-                            {personne.prenom} {personne.nom}
-                        </option>
-                    ))}
-                </select>
-                <span class="text-sm text-gray-500">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs acteurs</span>
-            </div>
-        </div>
-
-        <div class="flex items-start gap-4">
-            <label for="personnes" class="text-gray-700 w-40 pt-2">Acteurs :</label>
-            <div class="flex-1">
-                <select id="personnes" name="personnes" multiple size="5" class="w-full">
-                    {personnesList.map(({nom,prenom,id}) => (
-                        <option 
-                            selected={film.producteur?.includes(id)}
-                            value={id} 
-                        >
-                            {prenom} {nom}
-                        </option>
-                    ))}
-                </select>
-                <span class="text-sm text-gray-500">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs acteurs</span>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-            <div class="w-40"></div>
-            <button>
-                { id ? "Mettre à jour" : "Ajouter" }
-            </button>
-        </div>
-
-    </form>
+    </div>
 </Layout>

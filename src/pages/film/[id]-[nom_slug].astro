@@ -1,67 +1,105 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro"
+import type { FilmsResponse, PersonnesResponse, RoleResponse } from "../../pocketbase-types";
+import ImgPb from "../../components/ImgPb.astro";
+import { Debug } from "astro:components";
 import LinkPersonne from "../../components/LinkPersonne.astro";
-import { formatDate } from "../../utilitaires";
+import SelectPersonnes from "../../components/SelectPersonnes.vue";
 
-const { id } = Astro.params;
-
-
-if (!id) {
-    return Astro.redirect("/film");
+const { id } = Astro.params as {
+    id:string
 }
+const film = await Astro.locals.pb.collection("films").getOne<
+    FilmsResponse<{
+        realisateurs: PersonnesResponse ;
+        producteurs: PersonnesResponse[];
+        acteurs: PersonnesResponse[];
+        role_via_film: RoleResponse<{acteur:PersonnesResponse}>[];
+    }>
+>(id, {
+    expand: "realisateurs,producteurs,acteurs,role_via_film.acteur"
+})
+;
 
-const film = await Astro.locals.pb.collection("Films").getOne(id, {
-    expand: "personnes"
-});
 
-const image = Astro.locals.pb.files.getURL(film, film.image)
-
-const acteurs = film.expand?.personnes ?? [];
 ---
-<Layout title={film.titre ?? 'Film'}>
-    <article>
-        <header class="mb-6">
-            <h1>{film.titre}</h1>
-            {film.sortie && (
-                <p class="text-gray-600">Sorti le {formatDate(film.sortie)}</p>
-            )}
-        </header>
-
-        <div class="space-y-4">
-            {film.duree && (
-                <p>
-                    <span class="font-medium">Durée :</span> {film.duree} minutes
-                </p>
-            )}
+<!-- <Debug {film} /> -->
+<Layout>
+    <div class="max-w-4xl mx-auto px-4 py-16">
+        <div class="mb-8">
+            <a href="/films" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux films</a>
+        </div>
+        
+        <div class="space-y-8">
+            <div>
+                <h1 class="text-5xl font-bold mb-4">{film.titre}</h1>
+                <ImgPb record={film} image={film.image} alt={film.titre} classPicture="w-full h-96 object-cover rounded-lg mb-4" classImg="w-full h-full object-cover rounded-lg" />
+                <div class="flex gap-4 flex-wrap">
+                    {film.duree_min && (
+                        <div class="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm text-gray-700">{film.duree_min} minutes</div>
+                    )}
+                    {film.date_sortie && (
+                        <div class="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm text-gray-700">Sorti en {new Date(film.date_sortie).getFullYear()}</div>
+                    )}
+                </div>
+            </div>
+            
             {film.synopsis && (
-                <div>
-                    <h2>Synopsis</h2>
-                    <p class="text-gray-700 leading-relaxed">{film.synopsis}</p>
+                <div class="rounded-lg bg-gray-100 p-8">
+                    <h2 class="text-2xl font-bold mb-4">Synopsis</h2>
+                    <p class="leading-relaxed text-gray-700">{film.synopsis}</p>
                 </div>
             )}
+            
+            <div class="flex gap-4">
+                {Astro.locals.pb.authStore.record?.id === film.user && (
+                    <a href={`/films/edit/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Modifier le film</a>
+                    <a href={`/films/supp-film/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Supprimer le film</a>
+                    <a href={`/films/ajout-role/${film.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Ajouter un rôle</a>
+                )}
+                <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">Voir d'autres films</a>
+            </div>
+        </div>
 
-            {acteurs.length > 0 && (
-                <div>
-                    <h2>Casting</h2>
+        <div>
+            {film.expand?.realisateurs && (
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-2">Réalisateur</h2>
+                    <p>{film.expand.realisateurs.prenom} {film.expand.realisateurs.nom}</p>
+                </div>
+            )}
+            
+            <!-- {film.expand?.acteurs && film.expand.acteurs.length > 0 && (
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-2">Acteur{film.expand.acteurs.length > 1 && "s"}</h2>
                     <ul class="list-disc list-inside">
-                        {acteurs.map((personne) => (
-                            <li>
-                                <LinkPersonne personne={personne} />
-                            </li>
+                        {film.expand.acteurs.map(acteur => (
+                            <li>{acteur.prenom} {acteur.nom}</li>
+                        ))}
+                    </ul>
+                </div>
+            )} -->
+
+                 <label>
+                    <SelectPersonnes />
+                 </label>
+            
+                {film.expand?.role_via_film?.map((role) => 
+                    <li>
+                        {role.nom} joué par <LinkPersonne personne={role.expand.acteur} />
+                    <li/>
+                )}
+            
+            {film.expand?.producteurs && film.expand.producteurs.length > 0 && (
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-2">Producteur{film.expand.producteurs.length > 1 && "s"}</h2>
+                    <ul class="list-disc list-inside">
+                        {film.expand.producteurs.map(producteur => (
+                            <li>{producteur.prenom} {producteur.nom}</li>
                         ))}
                     </ul>
                 </div>
             )}
         </div>
-
-        <div class="mt-8 flex gap-4">
-            <a href="/film" class="text-gray-600">← Retour à la liste</a>
-            {Astro.locals.pb.authStore.record?.id === film.user && (
-                <a href={`/film/edit/${film.id}`} class="btn">Modifier</a>
-            )}
-        </div>
-
-        <img src={image} alt={film.titre}>
-
-    </article>
+    </div>
 </Layout>

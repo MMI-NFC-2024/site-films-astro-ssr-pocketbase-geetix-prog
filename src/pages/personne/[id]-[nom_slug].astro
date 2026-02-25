@@ -1,47 +1,51 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { formatDate } from "../../utilitaires";
 
-const { id } = Astro.params;
-
-if (!id) {
-    return Astro.redirect("/personne");
-}
-
-const personne = await Astro.locals.pb.collection("Personnes").getOne(id);
+const { id } = Astro.params as {
+    id:string
+} ;
+const personne = await Astro.locals.pb.collection("personnes").getOne(id) ;
 ---
-<Layout title={`${personne.prenom ?? ''} ${personne.nom ?? 'Personne'}`}>
-    <article>
-        <header class="mb-6">
-            <h1>{personne.prenom} {personne.nom}</h1>
-            {personne.profession && personne.profession.length > 0 && (
-                <p class="text-gray-600">{personne.profession.join(", ")}</p>
-            )}
-        </header>
-
-        <div class="space-y-4">
-            {personne.naissance && (
-                <p>
-                    <span class="font-medium">Date de naissance :</span> {formatDate(personne.naissance)}
-                </p>
-            )}
-            {personne.mort && (
-                <p>
-                    <span class="font-medium">Date de décès :</span> {formatDate(personne.mort)}
-                </p>
-            )}
-            {personne.nationalite && (
-                <p>
-                    <span class="font-medium">Nationalité :</span> {personne.nationalite.toUpperCase()}
-                </p>
-            )}
+<Layout>
+    <div class="max-w-4xl mx-auto px-4 py-16">
+        <div class="mb-8">
+            <a href="/personne" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux acteurs</a>
         </div>
-
-        <div class="mt-8 flex gap-4">
-            <a href="/personne" class="text-gray-600">← Retour à la liste</a>
-            {Astro.locals.pb.authStore.record?.id === personne.user && (
-                <a href={`/personne/edit/${personne.id}`} class="btn">Modifier</a>
-            )}
+        
+        <div class="space-y-8">
+            <div>
+                <h1 class="text-5xl font-bold mb-4">{personne.prenom} {personne.nom}</h1>
+                <div class="flex gap-4 flex-wrap">
+                    {personne.profession && personne.profession.length > 0 && (
+                        <div class="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm text-gray-700">{personne.profession.join(', ')}</div>
+                    )}
+                    {personne.nationalite && (
+                        <div class="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">{personne.nationalite}</div>
+                    )}
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {personne.date_de_naissance && (
+                    <div class="rounded-lg bg-gray-100 p-6">
+                        <h3 class="text-lg font-semibold mb-2">Né(e) le</h3>
+                        <p class="text-gray-700">{new Date(personne.date_de_naissance).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                )}
+                {personne.date_de_deces && (
+                    <div class="rounded-lg bg-gray-100 p-6">
+                        <h3 class="text-lg font-semibold mb-2">Décédé(e) le</h3>
+                        <p class="text-gray-700">{new Date(personne.date_de_deces).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                )}
+            </div>
+            
+            <div class="flex gap-4">
+                {Astro.locals.pb.authStore.record?.id === personne.user && (
+                    <a href={`/personne/edit/${personne.id}`} class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Modifier la personne</a>
+                )}
+                <a href="/personne" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">Voir d'autres acteurs</a>
+            </div>
         </div>
-    </article>
+    </div>
 </Layout>

@@ -6,13 +6,14 @@ import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
 export enum Collections {
-	Films = "Films",
-	Personnes = "Personnes",
 	Authorigins = "_authOrigins",
 	Externalauths = "_externalAuths",
 	Mfas = "_mfas",
 	Otps = "_otps",
 	Superusers = "_superusers",
+	Films = "films",
+	Personnes = "personnes",
+	Role = "role",
 	Users = "users",
 }
 
@@ -44,45 +45,6 @@ export type AuthSystemFields<T = unknown> = {
 } & BaseSystemFields<T>
 
 // Record types for each collection
-
-export type FilmsRecord = {
-	created: IsoAutoDateString
-	duree?: number
-	id: string
-	image?: FileNameString
-	personnes?: RecordIdString[]
-	producteur?: RecordIdString[]
-	sortie?: IsoDateString
-	synopsis?: string
-	titre?: string
-	updated: IsoAutoDateString
-	user?: RecordIdString
-}
-
-export enum PersonnesProfessionOptions {
-	"acteur" = "acteur",
-	"réalisateur" = "réalisateur",
-	"scénariste" = "scénariste",
-	"producteur" = "producteur",
-}
-
-export enum PersonnesNationaliteOptions {
-	"fr" = "fr",
-	"us" = "us",
-	"uk" = "uk",
-}
-export type PersonnesRecord = {
-	created: IsoAutoDateString
-	id: string
-	mort?: IsoDateString
-	naissance?: IsoDateString
-	nationalite?: PersonnesNationaliteOptions
-	nom?: string
-	prenom?: string
-	profession?: PersonnesProfessionOptions[]
-	updated: IsoAutoDateString
-	user: RecordIdString
-}
 
 export type AuthoriginsRecord = {
 	collectionRef: string
@@ -133,6 +95,57 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
+export type FilmsRecord = {
+	acteurs?: RecordIdString[]
+	created: IsoAutoDateString
+	date_sortie?: IsoDateString
+	duree_min?: number
+	id: string
+	image?: FileNameString
+	producteurs?: RecordIdString[]
+	realisateurs?: RecordIdString
+	synopsis?: string
+	titre?: string
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
+export enum PersonnesProfessionOptions {
+	"acteur" = "acteur",
+	"réalisateur" = "réalisateur",
+	"scénariste" = "scénariste",
+	"producteur" = "producteur",
+}
+
+export enum PersonnesNationaliteOptions {
+	"FR" = "FR",
+	"ES" = "ES",
+	"GB" = "GB",
+	"DE" = "DE",
+}
+export type PersonnesRecord = {
+	created: IsoAutoDateString
+	date_de_deces?: IsoDateString
+	date_de_naissance?: IsoDateString
+	id: string
+	img?: FileNameString
+	nationalite?: PersonnesNationaliteOptions
+	nom?: string
+	prenom?: string
+	profession?: PersonnesProfessionOptions[]
+	updated: IsoAutoDateString
+	user: RecordIdString
+}
+
+export type RoleRecord = {
+	acteur?: RecordIdString
+	created: IsoAutoDateString
+	id: string
+	nom?: string
+	updated: IsoAutoDateString
+	user?: RecordIdString
+}
+
 export type UsersRecord = {
 	avatar?: FileNameString
 	created: IsoAutoDateString
@@ -147,36 +160,39 @@ export type UsersRecord = {
 }
 
 // Response types include system fields and match responses from the PocketBase API
-export type FilmsResponse<Texpand = unknown> = Required<FilmsRecord> & BaseSystemFields<Texpand>
-export type PersonnesResponse<Texpand = unknown> = Required<PersonnesRecord> & BaseSystemFields<Texpand>
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
+export type FilmsResponse<Texpand = unknown> = Required<FilmsRecord> & BaseSystemFields<Texpand>
+export type PersonnesResponse<Texpand = unknown> = Required<PersonnesRecord> & BaseSystemFields<Texpand>
+export type RoleResponse<Texpand = unknown> = Required<RoleRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
-	Films: FilmsRecord
-	Personnes: PersonnesRecord
 	_authOrigins: AuthoriginsRecord
 	_externalAuths: ExternalauthsRecord
 	_mfas: MfasRecord
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
+	films: FilmsRecord
+	personnes: PersonnesRecord
+	role: RoleRecord
 	users: UsersRecord
 }
 
 export type CollectionResponses = {
-	Films: FilmsResponse
-	Personnes: PersonnesResponse
 	_authOrigins: AuthoriginsResponse
 	_externalAuths: ExternalauthsResponse
 	_mfas: MfasResponse
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
+	films: FilmsResponse
+	personnes: PersonnesResponse
+	role: RoleResponse
 	users: UsersResponse
 }
 

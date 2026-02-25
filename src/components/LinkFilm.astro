@@ -1,10 +1,27 @@
 ---
 import slug from 'slug';
-import type { FilmsRecord } from '../pocketbase-types'
+import type { FilmsRecord } from '../pocketbase-types';
 
 interface Props {
-    film:FilmsRecord;
+    film:FilmsRecord
 }
-const film = Astro.props.film
+
+const film = Astro.props.film;
 ---
-<a href={`/film/${film.id}-${slug(film.titre ?? "Inconnu")}`}>{film.titre}</a>
+
+<a href={`/films/${film.id}-${slug(film.titre ?? "Inconnu")}`} class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition-shadow hover:shadow-md">
+    <div class="p-6">
+        <h2 class="text-lg font-semibold line-clamp-2">{film.titre}</h2>
+        {film.synopsis && (
+            <p class="text-sm text-gray-600 line-clamp-3">{film.synopsis}</p>
+        )}
+        <div class="mt-4 flex items-center justify-between">
+            {film.duree_min && (
+                <span class="rounded bg-white px-3 py-1 text-xs text-gray-500">{film.duree_min} min</span>
+            )}
+            <svg class="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </div>
+    </div>
+</a>

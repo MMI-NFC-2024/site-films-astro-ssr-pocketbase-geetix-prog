@@ -1,0 +1,47 @@
+---
+import slug from "slug";
+import Layout from "../../../layouts/Layout.astro";
+const {idFilm} = Astro.params;
+const film = Astro.locals.pb.collection("films").getOne(idFilm!)
+const personnes = await Astro.locals.pb.collection("personnes").getFullList() ;
+
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    Astro.locals.pb.collection("role").create(data)
+    return Astro.redirect(`/films/${idFilm}-${slug(film.titre ?? "Inconnu")}`)
+}
+---
+
+<Layout>
+    <form method="POST" class="mx-auto max-w-xl space-y-4 rounded-xl border border-gray-200 bg-gray-100 p-6">
+        <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
+        <label class="block text-sm font-semibold text-gray-800">
+            Nom du Rôle
+            <input type="text" name="nom" class="mt-2 w-full rounded-md border border-gray-300 px-3 py-2">
+            <input type="hidden" name="film" value={idFilm}>
+        </label>
+    
+        <div class="w-full space-y-2">
+                            <label class="block" for="acteur">
+                                <span class="text-sm font-semibold text-gray-800">Acteurs</span>
+                            </label>
+                            <select name="acteur" id="acteur" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                                <option value="">-- Sélectionner un acteur --</option>
+                                {
+                                    personnes.map((personne) => (
+                                    <option value={personne.id}>
+                                        {personne.prenom} {personne.nom}
+                                    </option>
+                                    ))
+                                }
+                            </select>
+        </div>
+    
+        <div class="mt-8 flex justify-between">
+                <a href="/films" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
+                    Ajouter
+                </button>
+        </div>
+    </form>
+</Layout>

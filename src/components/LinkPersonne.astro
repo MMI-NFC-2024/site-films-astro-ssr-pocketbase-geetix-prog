@@ -7,4 +7,24 @@ interface Props {
 }
 const personne = Astro.props.personne
 ---
-<a href={`/personne/${personne.id}-${slug(personne.nom ?? "Inconnu")}`}>{personne.nom}</a>
+<a href={`/personne/${personne.id}-${slug(personne.nom ?? "Inconnu")}`} class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm transition-shadow hover:shadow-md">
+    <div class="p-6">
+        <h2 class="text-lg font-semibold">
+            <span>{personne.prenom}</span>
+            <span class="font-bold">{personne.nom}</span>
+        </h2>
+        <div class="flex flex-wrap gap-2 mt-2">
+            {personne.profession && personne.profession.length > 0 && (
+                <div class="inline-flex items-center rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-700">{personne.profession[0]}</div>
+            )}
+            {personne.nationalite && (
+                <div class="inline-flex items-center rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-700">{personne.nationalite}</div>
+            )}
+        </div>
+        <div class="mt-4 flex justify-end">
+            <svg class="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </div>
+    </div>
+</a>

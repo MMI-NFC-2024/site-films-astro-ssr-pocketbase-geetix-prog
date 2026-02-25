@@ -1,19 +1,36 @@
 ---
-import LinkFilm from "../../components/LinkFilm.astro"
-import Layout from "../../layouts/Layout.astro"
-const films = await Astro.locals.pb.collection("Films").getFullList()
----
+import Layout from "../../layouts/Layout.astro";
+import LinkFilm from "../../components/LinkFilm.astro";
 
+const films = await Astro.locals.pb.collection("films").getFullList();
+---
 <Layout titre="Les films">
-    <h1>les films</h1>
-    <ul>
-        {
-            films.map((film) => (
-                <li>
-                    <LinkFilm film={film} />
-                </li>
-            ))
-        }
-    </ul>
-{ Astro.locals.pb.authStore.isValid && <a href="/film/edit/">Ajouter un nouveau film</a> }
+    <div class="max-w-7xl mx-auto px-4 py-16">
+        <div class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-4xl font-bold">Les films</h1>
+                <p class="mt-2 text-gray-600">Total: {films.length} film{films.length > 1 ? 's' : ''}</p>
+            </div>
+            { Astro.locals.pb.authStore.isValid && 
+                <a href="/films/edit/" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">+ Ajouter un film</a>
+            }
+        </div>
+        
+        {films.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {
+                    films.map((film) => (
+                        <LinkFilm film={film} />
+                    ))
+                }
+            </div>
+        ) : (
+            <div class="text-center py-12">
+                <p class="mb-6 text-lg text-gray-600">Aucun film pour le moment.</p>
+                {Astro.locals.pb.authStore.isValid && (
+                    <a href="/films/edit/" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Ajouter le premier film</a>
+                )}
+            </div>
+        )}
+    </div>
 </Layout>

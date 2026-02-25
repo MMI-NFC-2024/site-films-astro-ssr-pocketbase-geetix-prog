@@ -1,10 +1,49 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro"
 ---
 
-<Layout>
-    <div class="flex flex-col">
-        <a href="/personne">Voir les personnes</a>
-        <a href="/film">Voir les films</a>
-    </div>
+<Layout titre="Accueil">
+	<div class="max-w-7xl mx-auto px-4 py-16">
+		<!-- Hero Section -->
+		<section class="mb-20">
+			<div class="text-center space-y-6">
+				<h1 class="text-5xl font-bold">Films & Acteurs</h1>
+				<p class="mx-auto max-w-2xl text-xl text-gray-600">Explorez une collection complète de films et découvrez les acteurs qui les ont rendus inoubliables.</p>
+				
+				<div class="flex gap-4 justify-center flex-wrap pt-4">
+					<a href="/films" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-6 py-3 text-base font-medium text-white hover:bg-gray-800">Voir les films</a>
+					<a href="/personne" class="inline-flex items-center justify-center rounded-md border border-gray-300 px-6 py-3 text-base font-medium text-gray-900 hover:bg-gray-100">Voir les acteurs</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- Stats Section -->
+		<section class="mb-20 grid grid-cols-1 gap-6 md:grid-cols-3">
+			<div class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
+				<div class="p-6 text-center">
+					<div class="text-4xl font-bold text-gray-900">0</div>
+					<p class="text-gray-600">Films</p>
+				</div>
+			</div>
+			<div class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
+				<div class="p-6 text-center">
+					<div class="text-4xl font-bold text-gray-900">0</div>
+					<p class="text-gray-600">Acteurs</p>
+				</div>
+			</div>
+			<div class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
+				<div class="p-6 text-center">
+					<div class="text-4xl font-bold text-gray-900">0</div>
+					<p class="text-gray-600">Réalisateurs</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="rounded-lg bg-gray-100 p-12 text-center">
+			<h2 class="text-3xl font-bold mb-4">Vous avez un film à ajouter?</h2>
+			<p class="mx-auto mb-6 max-w-xl text-gray-600">Connectez-vous pour contribuer à notre base de données et partager vos films préférés.</p>
+			<a href="/authPassword" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Se connecter</a>
+		</section>
+	</div>
 </Layout>

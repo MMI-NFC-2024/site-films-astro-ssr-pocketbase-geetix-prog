@@ -1,0 +1,19 @@
+---
+import Layout from "../../../layouts/Layout.astro"
+import slug from "slug";
+
+const { idFilm } = Astro.params;
+const film = await Astro.locals.pb.collection("films").getOne(idFilm!)
+
+if (Astro.request.method === "POST") {
+   await Astro.locals.pb.collection("films").delete(idFilm!)
+   return Astro.redirect("/films")
+}
+---
+
+<Layout>
+    <form method="POST">
+        <p>Desirez vous supprimer le film {film.titre}</p>
+        <button>Supprimer</button>
+    </form>
+</Layout>

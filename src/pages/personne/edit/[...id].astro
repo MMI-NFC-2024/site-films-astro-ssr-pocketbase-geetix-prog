@@ -1,20 +1,20 @@
 ---
 import slug from "slug";
 import Layout from "../../../layouts/Layout.astro"
-import { PersonnesProfessionOptions, type PersonnesResponse } from "../../../pocketbase-types";
+import { PersonnesNationaliteOptions, PersonnesProfessionOptions, type PersonnesResponse } from "../../../pocketbase-types";
 import { formatDate } from "../../../utilitaires";
 import { Debug } from "astro:components";
 const { id } = Astro.params ;
 let message = null
 let personne = {} as PersonnesResponse ;
 if (id) {
-    personne = await Astro.locals.pb.collection("Personnes").getOne(id)
+    personne = await Astro.locals.pb.collection("personnes").getOne(id)
 }
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     const personneCree = await (id
-            ?(Astro.locals.pb.collection("Personnes").update(id!, data))
-            :(Astro.locals.pb.collection("Personnes").create(data))
+            ?(Astro.locals.pb.collection("personnes").update(id!, data))
+            :(Astro.locals.pb.collection("personnes").create(data))
         )
         .catch(err => {
             console.error("Erreur de sauvegarde de la personne : ", err);
@@ -29,56 +29,100 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout>
-    <h1>Ajouter une personne</h1>
-    {message && <p class="text-red-500">{message}</p>}
-    <form method="post">
+    <div class="max-w-2xl mx-auto px-4 py-16">
+        <div class="mb-8">
+            <a href="/personne" class="text-sm text-gray-600 underline-offset-4 hover:text-gray-900 hover:underline">← Retour aux acteurs</a>
+        </div>
+        
+        <div class="rounded-xl border border-gray-200 bg-gray-100">
+            <div class="p-6">
+                <h1 class="text-3xl font-semibold">{id ? "Modifier la personne" : "Ajouter une nouvelle personne"}</h1>
+                
+                {message && (
+                    <div class="rounded-md border border-red-200 bg-red-50 p-3 text-red-700">
+                        <span>{message}</span>
+                    </div>
+                )}
+                
+                <form method="post" class="space-y-6 mt-6">
+                    {id && <input type="hidden" name="id" value={id}/> }
+                    <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
 
-        { id && <input type="hidden" name="id" value={id}> }
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="w-full space-y-2">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-gray-800">Prénom</span>
+                            </label>
+                            <input name="prenom" value={personne.prenom} type="text" class="w-full rounded-md border border-gray-300 px-3 py-2" placeholder="Prénom">
+                        </div>
 
-        <input type="hidden" name="user" value={Astro.locals.pb.authStore.record?.id}>
+                        <div class="w-full space-y-2">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-gray-800">Nom *</span>
+                            </label>
+                            <input name="nom" value={personne.nom} type="text" class="w-full rounded-md border border-gray-300 px-3 py-2" placeholder="Nom" required>
+                        </div>
+                    </div>
 
-        <label class="block">
-                <span class="text-gray-700">Nom :</span>
-                <input name="nom" value={personne.nom} type="text" class="mt-1 block w-full" placeholder="">
-        </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="w-full space-y-2">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-gray-800">Date de naissance</span>
+                            </label>
+                            <input name="date_de_naissance" value={formatDate(personne.date_de_naissance)} type="date" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                        </div>
 
-        <label class="block">
-                <span class="text-gray-700">Prénom :</span>
-                <input name="prenom" value={personne.prenom} type="text" class="mt-1 block w-full" placeholder="">
-        </label>
+                        <div class="w-full space-y-2">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-gray-800">Date de décès</span>
+                            </label>
+                            <input name="date_de_deces" value={formatDate(personne.date_de_deces)} type="date" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                        </div>
+                    </div>
 
-        <label class="block">
-                <span class="text-gray-700">Date de naissance :</span>
-                <input name="date_de_naissance" value={formatDate(personne.naissance)} type="date" class="mt-1 block w-full" placeholder="">
-        </label>
+                    <div class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Nationalité</span>
+                        </label>
+                        <select name="nationalite" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                            <option value="">Choisir une nationalité</option>
+                            {
+                                Object.entries(PersonnesNationaliteOptions).map(([key, value]) => (
+                                    <option selected={value === personne.nationalite}  value={value}>
+                                        {key}
+                                    </option>
+                                ) 
+                            )}
+                        </select>
+                    </div>
 
-        <label class="block">
-                <span class="text-gray-700">Date de décès :</span>
-                <input name="date_de_deces" value={formatDate(personne.mort)} type="date" class="mt-1 block w-full" placeholder="">
-        </label>
+                    <fieldset class="w-full space-y-2">
+                        <label class="block">
+                            <span class="text-sm font-semibold text-gray-800">Profession</span>
+                        </label>
+                        <div class="space-y-3">
+                            {
+                                Object.entries(PersonnesProfessionOptions).map(([key, value]) =>
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="profession" value={value}
+                                        checked={personne.profession?.includes(value)}
+                                        class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+                                        />
+                                        <span class="text-sm text-gray-700">{key}</span>
+                                    </label>
+                                )
+                            }
+                        </div>
+                    </fieldset>
 
-       <fieldset>
-        <legend>Profession : </legend>
-           {
-                Object.entries(PersonnesProfessionOptions).map(([key, value]) =>
-                    <label>
-                        <input type="checkbox" name="profession" value={value}
-                        checked={personne.profession?.includes(value)}
-                        />
-                        {key}
-                    </label>
-                )
-            }
-       </fieldset>
-
-        {/* <label class="block">
-                <span class="text-gray-700">Image de la personne :</span>
-                <input name="profession" type="" class="mt-1 block w-full" placeholder="">
-        </label> */}
-
-        <button>
-            { id ? "Mettre à jour" : "Ajouter" }
-        </button>
-
-    </form>
+                    <div class="mt-8 flex justify-between">
+                        <a href="/personne" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Annuler</a>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
+                            {id ? "Mettre à jour" : "Ajouter"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </Layout>

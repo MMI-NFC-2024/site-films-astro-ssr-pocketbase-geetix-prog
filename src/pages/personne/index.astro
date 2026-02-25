@@ -1,19 +1,36 @@
 ---
 import LinkPersonne from "../../components/LinkPersonne.astro"
 import Layout from "../../layouts/Layout.astro"
-const personnes = await Astro.locals.pb.collection("Personnes").getFullList()
+const personnes = await Astro.locals.pb.collection("personnes").getFullList()
 ---
 
 <Layout titre="Les personnes" description="Page regroupant toutes les personnes">
-    <h1>les personnes</h1>
-    <ul>
-        {
-            personnes.map((personne) => (
-                <li>
-                    <LinkPersonne personne={personne} />
-                </li>
-            ))
-        }
-    </ul>
-{ Astro.locals.pb.authStore.isValid && <a href="/personne/edit/">Ajouter une nouvelle personne</a> }
+    <div class="max-w-7xl mx-auto px-4 py-16">
+        <div class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-4xl font-bold">Les acteurs</h1>
+                <p class="mt-2 text-gray-600">Total: {personnes.length} personne{personnes.length > 1 ? 's' : ''}</p>
+            </div>
+            { Astro.locals.pb.authStore.isValid && 
+                <a href="/personne/edit/" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">+ Ajouter une personne</a>
+            }
+        </div>
+        
+        {personnes.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {
+                    personnes.map((personne) => (
+                        <LinkPersonne personne={personne} />
+                    ))
+                }
+            </div>
+        ) : (
+            <div class="text-center py-12">
+                <p class="mb-6 text-lg text-gray-600">Aucune personne pour le moment.</p>
+                {Astro.locals.pb.authStore.isValid && (
+                    <a href="/personne/edit/" class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Ajouter la première personne</a>
+                )}
+            </div>
+        )}
+    </div>
 </Layout>
