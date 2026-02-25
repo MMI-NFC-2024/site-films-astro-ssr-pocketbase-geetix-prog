@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro"
+const films = await Astro.locals.pb.collection("films").getFullList();
 ---
 
 <Layout titre="Accueil">
@@ -21,7 +22,7 @@ import Layout from "../layouts/Layout.astro"
 		<section class="mb-20 grid grid-cols-1 gap-6 md:grid-cols-3">
 			<div class="rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 				<div class="p-6 text-center">
-					<div class="text-4xl font-bold text-gray-900">0</div>
+					<div class="text-4xl font-bold text-gray-900">{films.length}</div>
 					<p class="text-gray-600">Films</p>
 				</div>
 			</div>
