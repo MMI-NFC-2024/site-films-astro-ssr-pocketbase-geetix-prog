@@ -6,7 +6,6 @@ import type { FilmsResponse, PersonnesResponse, RoleResponse } from "../../pocke
 import ImgPb from "../../components/ImgPb.astro";
 import { Debug } from "astro:components";
 import LinkPersonne from "../../components/LinkPersonne.astro";
-import SelectPersonnes from "../../components/SelectPersonnes.vue";
 
 const { id } = Astro.params as {
     id:string
@@ -82,9 +81,7 @@ const film = await Astro.locals.pb.collection("films").getOne<
                 </div>
             )} -->
 
-                 <label>
-                    <SelectPersonnes />
-                 </label>
+    
             
                 {film.expand?.role_via_film?.map((role) => 
                     <li>
