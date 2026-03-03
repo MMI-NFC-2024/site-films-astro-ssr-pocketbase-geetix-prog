@@ -3,8 +3,7 @@ import PocketBase from "pocketbase";
 
 import { defineMiddleware } from "astro/middleware";
 
-const pocketbaseUrl =
-  import.meta.env.POCKETBASE_URL?.trim() || "http://127.0.0.1:8090";
+const pocketbaseUrl = import.meta.env.POCKETBASE_URL;
 
 export const onRequest = defineMiddleware(
   async ({ locals, request, isPrerendered }: any, next: () => any) => {
