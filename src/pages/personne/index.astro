@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import LinkPersonne from "../../components/LinkPersonne.astro"
 import Layout from "../../layouts/Layout.astro"
 const personnes = await Astro.locals.pb.collection("personnes").getFullList()
