@@ -52,3 +52,4 @@ jobs:
           npm install astro
           npm install send server-destroy
           PORT=8091 pm2 restart film || PORT=8091 pm2 start entry.mjs --name film
+          
